@@ -1,6 +1,3 @@
-
-#Hello we are in git demo
-
 from restaurantWeb.models import Customer,Dish,Order,CustomerPaymentMapping,Coupon,Restaurant
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
