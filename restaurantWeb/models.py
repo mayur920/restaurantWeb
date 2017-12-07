@@ -172,7 +172,7 @@ class Restaurantleave(models.Model):
     leave_reason = models.CharField(max_length=2000)
 
     def __unicode__(self):
-        return "{}".format(self.id, self.restaurant_off_date, self.leave_reason)
+        return "{} {}".format(self.id, self.restaurant_off_date, self.leave_reason)
 
     def get_json(self):
         result = {}

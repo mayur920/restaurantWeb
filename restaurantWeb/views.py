@@ -573,8 +573,10 @@ def save_restaurantleave(request):
     json_obj = json.loads(request.body)
 
     input_restaurant_off_date = json_obj.get("restaurantOffDate")
+    input_leave_reason = json_obj.get("leaveReason")
 
     restaurant_leave_obj = Restaurantleave.objects.create(restaurant_off_date=input_restaurant_off_date,
+                                                          leave_reason=input_leave_reason
                                                          )
                                     
     return JsonResponse({"validation": "Restaurantleave Info saved successfully", "status": True})
