@@ -142,12 +142,15 @@ class Restaurant(models.Model):
     restaurant_name = models.CharField(max_length=300)
     restaurant_address = models.CharField(max_length=300)
     restaurant_contact = models.IntegerField()
-    restaurant_time = models.DateTimeField()
+    restaurant_opening_time = models.TimeField()
+    restaurant_closing_time = models.TimeField()
+    
 
     def __unicode__(self):
-        return "{} {} {} {}".format(self.id, self.restaurant_name, self.restaurant_address,
-                                    self.restaurant_contact, self.restaurant_time
-                                   )
+        return "{} {} {} {} {}".format(self.id, self.restaurant_name, self.restaurant_address,
+                                       self.restaurant_contact, self.restaurant_opening_time,
+                                       self.restaurant_closing_time
+                                      )
 
     def get_json(self):
         result = {}
@@ -158,7 +161,25 @@ class Restaurant(models.Model):
         result['restaurant_name'] = self.restaurant_name if self.restaurant_name else None
         result['restaurant_address'] = self.restaurant_address if self.restaurant_address else None
         result['restaurant_contact'] = self.restaurant_contact if self.restaurant_contact else None
-        result['restaurant_time'] = self.restaurant_time if self.restaurant_time else None
+        result['restaurant_opening_time'] = str(self.restaurant_opening_time) if self.restaurant_opening_time else None
+        result['restaurant_closing_time'] = str(self.restaurant_closing_time) if self.restaurant_closing_time else None
 
         print result
         return result
+
+class Restaurantleave(models.Model):
+    restaurant_off_date = models.DateField()
+    leave_reason = models.CharField(max_length=2000)
+
+    def __unicode__(self):
+        return "{}".format(self.id, self.restaurant_off_date, self.leave_reason)
+
+    def get_json(self):
+        result = {}
+        result['id'] = self.id if self.id else None
+        result['restaurant_off_date'] = self.restaurant_off_date if self.restaurant_off_date else None
+        result['leave_reason'] = self.leave_reason if self.leave_reason else None
+
+        print result
+        return result
+

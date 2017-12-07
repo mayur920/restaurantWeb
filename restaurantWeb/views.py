@@ -434,9 +434,9 @@ def save_restaurant(request):
     input_confirm_password = json_obj.get("confirmPassword")
     input_restaurant_address = json_obj.get("restaurantAddress")
     input_restaurant_contact = json_obj.get("restaurantContact")
-    input_restaurant_time = json_obj.get("restaurantTime")
+    input_restaurant_opening_time = json_obj.get("restaurantOpeningTime")
+    input_restaurant_closing_time = json_obj.get("restaurantClosingTime")
 
-    restaurant_time = convert_epoch_to_date(input_restaurant_time)
 
     if (not input_password) or (not input_confirm_password):
         return JsonResponse({"validation": "Please Enter a correct password", "status": False})
@@ -450,7 +450,7 @@ def save_restaurant(request):
     admin_obj.save()
     
 
-    print input_restaurant_name, input_restaurant_address, input_restaurant_contact, input_restaurant_time
+    print input_restaurant_name, input_restaurant_address, input_restaurant_contact, input_restaurant_opening_time, input_restaurant_closing_time
 
     if not input_restaurant_name:
         return JsonResponse({"validation": "Enter Restaurant Name", "status": True})
@@ -463,7 +463,8 @@ def save_restaurant(request):
     restaurant_obj = Restaurant.objects.create(restaurant_name=input_restaurant_name,
                                                restaurant_address=input_restaurant_address, 
                                                restaurant_contact=input_restaurant_contact,
-                                               restaurant_time=restaurant_time,
+                                               restaurant_opening_time=input_restaurant_opening_time,
+                                               restaurant_closing_time=input_restaurant_closing_time,
                                                admin=admin_obj
                                               )
 
@@ -564,3 +565,27 @@ def get_date_range():
     last_day = datetime.date(year, previous_month, last_day_date)
 
     return first_day, last_day
+
+
+
+
+def save_restaurantleave(request):
+    json_obj = json.loads(request.body)
+
+    input_restaurant_off_date = json_obj.get("restaurantOffDate")
+
+    restaurant_leave_obj = Restaurantleave.objects.create(restaurant_off_date=input_restaurant_off_date,
+                                                         )
+                                    
+    return JsonResponse({"validation": "Restaurantleave Info saved successfully", "status": True})
+
+
+def get_restaurantleave(request):
+    json_obj=json.loads(request.body)
+    restaurantleave_id = json_obj.get("restaurantleaveId")
+
+    restaurantleave_obj = Restaurantleave.objects.get(id=restaurantleave_id)
+
+    restaurantleave_json_object = restaurantleave_obj.get_json()
+
+    return JsonResponse({"data": restaurantleave_json_object, "status": True})

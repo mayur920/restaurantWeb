@@ -48,8 +48,12 @@ admin.site.register(Coupon, CouponAdmin)
 #----------------------------------------------------------------------------------------------------
 
 class RestaurantAdmin(admin.ModelAdmin):
-	list_display = ('restaurant_name', 'restaurant_address', 'restaurant_contact', 'restaurant_time', 'admin')
-	list_filter = ('restaurant_address', 'restaurant_name', 'restaurant_contact', 'restaurant_time', 'admin')
+	list_display = ('restaurant_name', 'restaurant_address', 'restaurant_contact', 
+					'restaurant_opening_time', 'restaurant_closing_time', 'admin')
+
+	list_filter = ('restaurant_address', 'restaurant_name', 'restaurant_contact', 
+				   'restaurant_opening_time', 'restaurant_closing_time', 'admin')
+
 	search_fields = ('restaurant_address', 'restaurant_name')
 
 admin.site.register(Restaurant, RestaurantAdmin)
