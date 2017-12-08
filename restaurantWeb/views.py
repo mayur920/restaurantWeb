@@ -1,4 +1,4 @@
-from restaurantWeb.models import Customer,Dish,Order,CustomerPaymentMapping,Coupon,Restaurant
+from restaurantWeb.models import Customer,Dish,Order,CustomerPaymentMapping,Coupon,Restaurant,Restaurantleave
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
 from django.contrib.auth.models import User
@@ -6,6 +6,7 @@ from django.contrib.auth import login,authenticate
 from django.contrib.auth import logout
 import json, datetime, calendar
 from django.core.management.base import CommandError
+from django.core.mail import EmailMessage
 
 def convert_date_to_epoch(date):
     return int(date.strftime('%s'))*1000 if date else None
@@ -57,7 +58,9 @@ def customer_login(request):
     json_obj = json.loads(request.body)
     username = json_obj.get('username')
     password = json_obj.get('password')
-    print json_obj 
+
+    print json_obj
+
     if not username:
         return JsonResponse({"validation": "Please enter a valid username..!!", "status": False})
 
@@ -426,6 +429,7 @@ def save_restaurant(request):
 
     json_obj = json.loads(request.body)
 
+    input_restaurantleave_id = json_obj.get("restaurantleaveId")
     input_restaurant_name = json_obj.get("restaurantName")
     input_username = json_obj.get("username")
     input_password = json_obj.get("password")
@@ -448,7 +452,8 @@ def save_restaurant(request):
                                    last_name=input_last_name)
     admin_obj.set_password(input_password)
     admin_obj.save()
-    
+
+    restaurantleave_obj = Restaurantleave.objects.get(id=input_restaurantleave_id)
 
     print input_restaurant_name, input_restaurant_address, input_restaurant_contact, input_restaurant_opening_time, input_restaurant_closing_time
 
@@ -465,7 +470,8 @@ def save_restaurant(request):
                                                restaurant_contact=input_restaurant_contact,
                                                restaurant_opening_time=input_restaurant_opening_time,
                                                restaurant_closing_time=input_restaurant_closing_time,
-                                               admin=admin_obj
+                                               admin=admin_obj,
+                                               restaurantleave=restaurantleave_obj
                                               )
 
     return JsonResponse({"validation": "Restaurant Info saved successfully", "status": True})
@@ -575,9 +581,13 @@ def save_restaurantleave(request):
     input_restaurant_off_date = json_obj.get("restaurantOffDate")
     input_leave_reason = json_obj.get("leaveReason")
 
+    if not input_leave_reason:
+        return JsonResponse({"validation": "Enter Leave Reason ", "status": False})
+
     restaurant_leave_obj = Restaurantleave.objects.create(restaurant_off_date=input_restaurant_off_date,
                                                           leave_reason=input_leave_reason
                                                          )
+
                                     
     return JsonResponse({"validation": "Restaurantleave Info saved successfully", "status": True})
 
@@ -613,5 +623,53 @@ def search_restaurantleave(request):
     for restaurantleave in restaurantleaves:
         all_restaurantleave_list.append(restaurantleave.get_json())
             
-            
+
     return JsonResponse({'data': all_restaurantleave_list, 'status': True})
+
+
+def send_email(to_email, subject, body):
+    email = EmailMessage(subject, body, to=[to_email])
+    email.send()
+
+
+def get_next_week():
+    today = datetime.date.today()
+    week_start_day = today + datetime.timedelta(days=-today.weekday(), weeks=1)
+    week_end_day = week_start_day+datetime.timedelta(days=6)
+
+    return week_start_day, week_end_day
+
+def notify_leave_to_customers(request):
+    user = request.user
+
+    week_start_day, week_end_day = get_next_week()
+
+    restaurant_obj = Restaurant.objects.get(admin=user)
+
+    restaurant_leaves = Restaurantleave.objects.filter(restaurant_off_date__range=(week_start_day, week_end_day))
+
+    leave_list = [str(leave.restaurant_off_date) for leave in restaurant_leaves]
+
+    # leave_list = []
+    # for leave in restaurant_leaves:
+    #     leave_list.append(str(leave.restaurant_off_date))
+
+    raw_message = 'This week"s leaves: '
+    date_as_string = ''
+    for index, date in enumerate(leave_list):
+        date_as_string += date
+        if index < len(leave_list) - 1:
+            date_as_string += ','
+
+    message = raw_message + date_as_string
+
+    subject = "Notification regarding leaves in coming week"
+
+    customers = Customer.objects.filter(restaurant=restaurant_obj)
+
+    email_list = [customer.user.email for customer in customers]
+
+    for email in email_list:
+        send_email(email, subject, message)
+
+    return JsonResponse({'validation': 'email sent', 'status': True})

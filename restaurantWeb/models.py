@@ -170,6 +170,7 @@ class Restaurant(models.Model):
 class Restaurantleave(models.Model):
     restaurant_off_date = models.DateField()
     leave_reason = models.CharField(max_length=2000)
+    restaurant = models.ForeignKey(Restaurant)
 
     def __unicode__(self):
         return "{} {}".format(self.id, self.restaurant_off_date, self.leave_reason)

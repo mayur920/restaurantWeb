@@ -1,5 +1,7 @@
 from django.contrib import admin
-from restaurantWeb.models import Customer,Dish,Order,CustomerPaymentMapping,Coupon,Restaurant
+from restaurantWeb.models import Customer,Dish,Order,CustomerPaymentMapping,Coupon,Restaurant,Restaurantleave
+
+admin.site.register(Restaurantleave)
 
 
 class CustomerAdmin(admin.ModelAdmin):
