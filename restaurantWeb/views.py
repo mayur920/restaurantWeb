@@ -591,3 +591,27 @@ def get_restaurantleave(request):
     restaurantleave_json_object = restaurantleave_obj.get_json()
 
     return JsonResponse({"data": restaurantleave_json_object, "status": True})
+
+
+def get_all_restaurantleave(request):
+    json_obj=json.loads(request.body)
+    all_restaurantleave_list=[]
+    restaurantleaves_json_object = Restaurantleave.objects.all()
+    for restaurantleave in restaurantleaves:
+        all_restaurantleave_list.append(restaurantleave.get_json())
+    return JsonResponse({"data": all_restaurantleave_list, "status": True})
+
+
+def search_restaurantleave(request):
+    data_dict = json.loads(request.body)
+    search_string = data_dict.get("searchString")
+
+    all_restaurantleave_list = []
+
+    restaurantleaves = Restaurantleave.objects.filter(leave_reason__contains=search_string)
+
+    for restaurantleave in restaurantleaves:
+        all_restaurantleave_list.append(restaurantleave.get_json())
+            
+            
+    return JsonResponse({'data': all_restaurantleave_list, 'status': True})
