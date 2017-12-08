@@ -429,7 +429,7 @@ def save_restaurant(request):
 
     json_obj = json.loads(request.body)
 
-    input_restaurantleave_id = json_obj.get("restaurantleaveId")
+    #input_restaurantleave_id = json_obj.get("restaurantleaveId")
     input_restaurant_name = json_obj.get("restaurantName")
     input_username = json_obj.get("username")
     input_password = json_obj.get("password")
@@ -453,9 +453,9 @@ def save_restaurant(request):
     admin_obj.set_password(input_password)
     admin_obj.save()
 
-    restaurantleave_obj = Restaurantleave.objects.get(id=input_restaurantleave_id)
 
-    print input_restaurant_name, input_restaurant_address, input_restaurant_contact, input_restaurant_opening_time, input_restaurant_closing_time
+
+    #print input_restaurant_name, input_restaurant_address, input_restaurant_contact, input_restaurant_opening_time, input_restaurant_closing_time
 
     if not input_restaurant_name:
         return JsonResponse({"validation": "Enter Restaurant Name", "status": True})
@@ -470,8 +470,7 @@ def save_restaurant(request):
                                                restaurant_contact=input_restaurant_contact,
                                                restaurant_opening_time=input_restaurant_opening_time,
                                                restaurant_closing_time=input_restaurant_closing_time,
-                                               admin=admin_obj,
-                                               restaurantleave=restaurantleave_obj
+                                               admin=admin_obj
                                               )
 
     return JsonResponse({"validation": "Restaurant Info saved successfully", "status": True})
@@ -577,6 +576,7 @@ def get_date_range():
 
 def save_restaurantleave(request):
     json_obj = json.loads(request.body)
+    #restaurantleave_id = json_obj.get("restaurantleaveId")
 
     input_restaurant_off_date = json_obj.get("restaurantOffDate")
     input_leave_reason = json_obj.get("leaveReason")
@@ -673,3 +673,59 @@ def notify_leave_to_customers(request):
         send_email(email, subject, message)
 
     return JsonResponse({'validation': 'email sent', 'status': True})
+
+
+def get_numberofdays_range(year, month):
+    days = calendar.monthrange(year, month)[1]
+    numberof_days = []
+
+    # for day in range(1, days+1):
+    #     temp_dict = {}
+    #     date = datetime.date(year, month, day)
+    #     day_name = calendar.day_name[date.weekday()]
+    #     temp_dict['dayName'] = day_name
+    #     temp_dict['day'] = day
+    #     numberof_days.append(temp_dict)
+
+    for day in range(1, days+1):
+        date = datetime.date(year, month, day)
+        day_name = calendar.day_name[date.weekday()]
+        numberof_days.append({'dayName': day_name, 'day': day})
+
+    return numberof_days
+
+
+
+
+
+
+ # def datetoday(day, month, year):
+ #        d = day
+ #        m = month
+ #        y = year
+ #        if m < 3:
+ #            z = y-1
+ #        else:
+ #            z = y
+ #      dayofweek = ( 23*m//9 + d + 4 + y + z//4 - z//100 + z//400 )
+ #        if m >= 3:
+ #            dayofweek -= 2
+ #        dayofweek = dayofweek%7
+ #        return dayofweek
+    
+    
+    
+ #    months = [ 'january', 'february', 'march', 'april', 'may', 'june', 'july',
+ #              'august', 'september', 'october', 'november', 'december' ]
+    
+ #    days =[ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
+ #           'Sunday' ]
+    
+ #    d = int(raw_input("Day of the month 1-31 >>"))
+ #    m = int(raw_input("Month 1-12 >>"))
+ #    y = int(raw_input("Year e.g. 1974 >>"))
+    
+    
+ #    dayofweek = days[datetoday(d, m, y)-1]
+    
+ #    print dayofweek
