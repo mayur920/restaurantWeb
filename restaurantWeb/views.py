@@ -650,7 +650,7 @@ def notify_to_all_customers(request):
 
         raw_message = 'this weeks leaave'
         date_as_string = ''
-        for index,date in enumerate(leave_list):
+        for index,date in enumerate(leave_list)-1:
             date_as_string += date_as_string
             if index < len(leave_list)-1:
                 date_as_string += ','
