@@ -627,105 +627,53 @@ def search_restaurantleave(request):
     return JsonResponse({'data': all_restaurantleave_list, 'status': True})
 
 
-def send_email(to_email, subject, body):
-    email = EmailMessage(subject, body, to=[to_email])
-    email.send()
+def send_email(to_email,subject,body):
+    email = EmailMessage(subject,body, to=[to_email])
+    email.send_email()
 
 
 def get_next_week():
-    today = datetime.date.today()
-    week_start_day = today + datetime.timedelta(days=-today.weekday(), weeks=1)
-    week_end_day = week_start_day+datetime.timedelta(days=6)
+    today = date.datetime.today()
+    week_first_day = today+datetime.timedelta(days=-today+weekday(),weeks=1)
+    week_end_day = week_first_day+datetime.timedelta(days=6)
+    return week_first_day, week_end_day
 
-    return week_start_day, week_end_day
-
-def notify_leave_to_customers(request):
+def notify_to_all_customers(request):
     user = request.user
-
-    week_start_day, week_end_day = get_next_week()
-
+    week_first_day, week_end_day = get_next_week()
     restaurant_obj = Restaurant.objects.get(admin=user)
+    restaurant_leaves = Restaurantleave.objects.filter(restaurant_off_date__range(week_first_day, week_end_day))
 
-    restaurant_leaves = Restaurantleave.objects.filter(restaurant_off_date__range=(week_start_day, week_end_day))
+    leave_list = []
+    for leave in restaurantleave:
+        leave_list.append(str(leaves.restaurant_off_date))
 
-    leave_list = [str(leave.restaurant_off_date) for leave in restaurant_leaves]
+        raw_message = 'this weeks leaave'
+        date_as_string = ''
+        for index,date in enumerate(leave_list):
+            date_as_string += date_as_string
+            if index < len(leave_list)-1:
+                date_as_string += ','
+        message = raw_message + date_as_string
+        subject = "Restaurant leave notification for customer"
 
-    # leave_list = []
-    # for leave in restaurant_leaves:
-    #     leave_list.append(str(leave.restaurant_off_date))
+        customers = Customer.objects.filter(restaurant = restaurant_obj)
 
-    raw_message = 'This week"s leaves: '
-    date_as_string = ''
-    for index, date in enumerate(leave_list):
-        date_as_string += date
-        if index < len(leave_list) - 1:
-            date_as_string += ','
+        email_list = [customer.user.email for customer in customers]
 
-    message = raw_message + date_as_string
+        for email in email_list:
+            send_email(email,subject,message)
+        return JsonResponse({'validation':'email send','status':True})
 
-    subject = "Notification regarding leaves in coming week"
-
-    customers = Customer.objects.filter(restaurant=restaurant_obj)
-
-    email_list = [customer.user.email for customer in customers]
-
-    for email in email_list:
-        send_email(email, subject, message)
-
-    return JsonResponse({'validation': 'email sent', 'status': True})
 
 
 def get_numberofdays_range(year, month):
     days = calendar.monthrange(year, month)[1]
     numberof_days = []
-
-    # for day in range(1, days+1):
-    #     temp_dict = {}
-    #     date = datetime.date(year, month, day)
-    #     day_name = calendar.day_name[date.weekday()]
-    #     temp_dict['dayName'] = day_name
-    #     temp_dict['day'] = day
-    #     numberof_days.append(temp_dict)
-
     for day in range(1, days+1):
-        date = datetime.date(year, month, day)
+        date = datetime.date(year,month,day)
         day_name = calendar.day_name[date.weekday()]
-        numberof_days.append({'dayName': day_name, 'day': day})
-
+        numberof_days.append({'day_name':day_name, 'day':day})
     return numberof_days
 
 
-
-
-
-
- # def datetoday(day, month, year):
- #        d = day
- #        m = month
- #        y = year
- #        if m < 3:
- #            z = y-1
- #        else:
- #            z = y
- #      dayofweek = ( 23*m//9 + d + 4 + y + z//4 - z//100 + z//400 )
- #        if m >= 3:
- #            dayofweek -= 2
- #        dayofweek = dayofweek%7
- #        return dayofweek
-    
-    
-    
- #    months = [ 'january', 'february', 'march', 'april', 'may', 'june', 'july',
- #              'august', 'september', 'october', 'november', 'december' ]
-    
- #    days =[ 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
- #           'Sunday' ]
-    
- #    d = int(raw_input("Day of the month 1-31 >>"))
- #    m = int(raw_input("Month 1-12 >>"))
- #    y = int(raw_input("Year e.g. 1974 >>"))
-    
-    
- #    dayofweek = days[datetoday(d, m, y)-1]
-    
- #    print dayofweek
