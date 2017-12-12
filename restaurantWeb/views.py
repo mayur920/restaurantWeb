@@ -648,10 +648,10 @@ def notify_to_all_customers(request):
     for leave in restaurantleave:
         leave_list.append(str(leaves.restaurant_off_date))
 
-        raw_message = 'this weeks leaave'
+        raw_message = 'this weeks leave'
         date_as_string = ''
         for index,date in enumerate(leave_list)-1:
-            date_as_string += date_as_string
+            date_as_string += date
             if index < len(leave_list)-1:
                 date_as_string += ','
         message = raw_message + date_as_string
