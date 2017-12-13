@@ -629,41 +629,39 @@ def search_restaurantleave(request):
 
 def send_email(to_email,subject,body):
     email = EmailMessage(subject,body, to=[to_email])
-    email.send_email()
+    email.send()
 
 
 def get_next_week():
-    today = date.datetime.today()
-    week_first_day = today+datetime.timedelta(days=-today+weekday(),weeks=1)
-    week_end_day = week_first_day+datetime.timedelta(days=6)
+    today = datetime.date.today()
+    week_first_day = today + datetime.timedelta(days=-today.weekday(),weeks=1)
+    week_end_day = week_first_day + datetime.timedelta(days=6)
     return week_first_day, week_end_day
 
 def notify_to_all_customers(request):
     user = request.user
     week_first_day, week_end_day = get_next_week()
     restaurant_obj = Restaurant.objects.get(admin=user)
-    restaurant_leaves = Restaurantleave.objects.filter(restaurant_off_date__range(week_first_day, week_end_day))
-
+    restaurant_leaves = Restaurantleave.objects.filter(restaurant_off_date__range=(week_first_day, week_end_day))
     leave_list = []
-    for leave in restaurantleave:
-        leave_list.append(str(leaves.restaurant_off_date))
-
-        raw_message = 'this weeks leave'
+    for leave in restaurant_leaves:
+        leave_list.append(str(leave.restaurant_off_date))
+        raw_message = "This weeks leaves"
         date_as_string = ''
-        for index,date in enumerate(leave_list):
-            date_as_string += date
-            if index < len(leave_list)-1:
-                date_as_string += ','
-        message = raw_message + date_as_string
-        subject = "Restaurant leave notification for customer"
+    for index,date in enumerate(leave_list):
+        date_as_string+= date
+        if index < len(leave_list)-1:
+            date_as_string+= ','
+    message = raw_message + date_as_string
+    subject = "notify to customer for leaves"
 
-        customers = Customer.objects.filter(restaurant = restaurant_obj)
+    customers = Customer.objects.filter(restaurant=restaurant_obj)
 
-        email_list = [customer.user.email for customer in customers]
+    email_list = [customer.user.email for customer in customers]
 
-        for email in email_list:
-            send_email(email,subject,message)
-        return JsonResponse({'validation':'email send','status':True})
+    for email in email_list:
+        send_email(email,subject,message)
+    return JsonResponse({'validation':'sent mail','status':True})
 
 
 
