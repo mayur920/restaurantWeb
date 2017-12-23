@@ -1,7 +1,6 @@
 from django.contrib import admin
 from restaurantWeb.models import Customer,Dish,Order,CustomerPaymentMapping,Coupon,Restaurant,Restaurantleave
 
-admin.site.register(Restaurantleave)
 
 
 class CustomerAdmin(admin.ModelAdmin):
@@ -53,11 +52,20 @@ class RestaurantAdmin(admin.ModelAdmin):
 	list_display = ('restaurant_name', 'restaurant_address', 'restaurant_contact', 
 					'restaurant_opening_time', 'restaurant_closing_time', 'admin')
 
-	list_filter = ('restaurant_address', 'restaurant_name', 'restaurant_contact', 
-				   'restaurant_opening_time', 'restaurant_closing_time', 'admin')
+	list_filter = ('restaurant_address', 'restaurant_name', 'restaurant_contact',)
 
 	search_fields = ('restaurant_address', 'restaurant_name')
 
 admin.site.register(Restaurant, RestaurantAdmin)
 
 #----------------------------------------------------------------------------------------------------
+class RestaurantleaveAdmin(admin.ModelAdmin):
+	list_display = ('restaurant_off_date',  'leave_reason')
+
+	list_filter = ('restaurant_off_date', 'leave_reason')
+
+	search_fields = ('restaurant_off_date', 'leave_reason')
+
+admin.site.register(Restaurantleave, RestaurantleaveAdmin)
+
+#-----------------------------------------------------------------------------------------------------

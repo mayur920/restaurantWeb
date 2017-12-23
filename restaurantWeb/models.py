@@ -14,6 +14,7 @@ def upload_dish_image(instance, filename):
        return os.path.join('Dishes/'+"%s" %(re.sub('[^a-zA-Z0-9 \.\_]', '', filename).replace(' ', ''), ))
 
 
+
 # Create your models here.
 
 class Customer(models.Model):

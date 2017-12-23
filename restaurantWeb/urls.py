@@ -26,14 +26,14 @@ from restaurantWeb.views import save_customer, customer_login, customer_logout, 
                                 save_coupon, delete_coupon, get_coupon, get_all_coupon, search_coupon, scan_card,\
                                 save_restaurant, admin_login,get_restaurant, get_all_restaurant, search_restaurant,\
                                 save_restaurantleave, get_restaurantleave, get_all_restaurantleave, \
-                                search_restaurantleave, notify_leave_to_customers
+                                search_restaurantleave, notify_to_all_customers, home
                                 
-
-
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^save/customer/$', save_customer),
+    url(r'^$', home),
+    url(r'fcm/', include('fcm.urls')),
     url(r'^get/customer/$', get_customer),
     url(r'^get/all/customer/$', get_all_customer),
     url(r'^search/customer/$', search_customer),
@@ -66,5 +66,5 @@ urlpatterns = [
     url(r'^customer/login/$', customer_login),
     url(r'^customer/logout/$', customer_logout),
     # url(r'^admin/login/$', admin_login),
-    url(r'^notify/leave/to/customers/$', notify_leave_to_customers)
+    url(r'^notify/to/all/customers/$', notify_to_all_customers)
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

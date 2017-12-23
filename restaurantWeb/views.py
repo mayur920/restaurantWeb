@@ -1,6 +1,7 @@
 from restaurantWeb.models import Customer,Dish,Order,CustomerPaymentMapping,Coupon,Restaurant,Restaurantleave
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
+from django.shortcuts import render_to_response
 from django.contrib.auth.models import User
 from django.contrib.auth import login,authenticate
 from django.contrib.auth import logout
@@ -78,6 +79,9 @@ def customer_login(request):
 
     return JsonResponse({"validation": "Login Successful", "status": True})
 
+
+def home(request):
+    return render_to_response('html_templates/home.html')
 
 def customer_logout(self, request):
     logout(request)
